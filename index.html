@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ECON 100B grade calculator (Frech, Fall 2026)</title>
+<style>
+:root{--bg:#f7f6f2;--card:#ffffff;--ink:#141413;--sub:#5e5d59;--muted:#8a8984;--line:#e4e2da;--accent:#2a78d6;--harsh:#c2410c;--honest:#0f7a55;--raw:#141413}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1e1e1c;--ink:#f0efec;--sub:#c3c2b7;--muted:#8a8984;--line:#33332f;--accent:#5b9cf0;--harsh:#f08a5d;--honest:#3fc795;--raw:#f0efec}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:22px;font-weight:600;margin:0 0 4px}
+.sub{color:var(--sub);font-size:14px;margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{font-size:15px;font-weight:600;margin:0 0 12px;color:var(--sub);text-transform:none}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0}
+.row label{font-size:15px}
+.row small{display:block;color:var(--muted);font-size:12px}
+input[type=number]{width:84px;font-size:18px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);text-align:center}
+.quizzes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.quizzes div{text-align:center}
+.quizzes span{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.quizzes input{width:100%}
+.err{color:#d03b3b;font-size:13px;min-height:18px;margin-top:4px}
+.final-head{display:flex;justify-content:space-between;align-items:baseline}
+.big{font-size:40px;font-weight:600;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;height:36px;accent-color:var(--accent);margin:4px 0 0}
+.ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.results{display:grid;grid-template-columns:1fr;gap:10px}
+.res{border-radius:12px;padding:14px 16px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.res .t{font-size:14px;font-weight:600}
+.res .d{font-size:12px;color:var(--muted)}
+.res .v{font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.res.raw .v{color:var(--raw)} .res.harsh .v{color:var(--harsh)} .res.honest .v{color:var(--honest)}
+.res.harsh{border-left:5px solid var(--harsh)} .res.honest{border-left:5px solid var(--honest)} .res.raw{border-left:5px solid var(--muted)}
+.mini{font-size:13px;color:var(--sub);margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--sub);font-size:12px}
+td:first-child,th:first-child{text-align:left}
+.note{font-size:13px;color:var(--sub)}
+.note p{margin:0 0 8px}
+a{color:var(--accent)}
+button{font:inherit;font-size:14px;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+</style>
+</head>
+<body>
+<main>
+<div id="nojs" class="card" style="border-color:#d03b3b">
+<b>This preview can't run the calculator.</b> Open this page in Safari or Chrome (not a message or file preview). If you got it as a file, ask for the link instead.
+<table style="margin-top:10px"><thead><tr><th>Raw course %</th><th>Harsh curve</th><th>Honest curve</th></tr></thead><tbody>
+<tr><td>50</td><td>C</td><td>C+</td></tr><tr><td>55</td><td>C</td><td>B</td></tr><tr><td>58</td><td>C+</td><td>B</td></tr><tr><td>60</td><td>B-</td><td>B+</td></tr><tr><td>64</td><td>B</td><td>A-</td></tr><tr><td>66</td><td>B</td><td>A-</td></tr><tr><td>68</td><td>B+</td><td>A</td></tr><tr><td>70</td><td>B+</td><td>A</td></tr><tr><td>74</td><td>A-</td><td>A</td></tr><tr><td>78</td><td>A</td><td>A</td></tr>
+</tbody></table>
+<p class="mini">Raw % = quiz points (out of 25) + 35 × midterm % + 0.40 × final %.</p>
+</div>
+<h1>ECON 100B grade calculator</h1>
+<p class="sub">Prof. Frech, UCSB Fall 2026. Enter your scores, then drag the final exam slider. Nothing you type is saved or sent anywhere.</p>
+
+<section class="card">
+<h2>1. Midterm (35%)</h2>
+<div class="row"><label for="mcq">Multiple choice correct<small>out of 8 (5 pts each)</small></label><input id="mcq" type="number" inputmode="numeric" min="0" max="8" step="1" placeholder="0-8"></div>
+<div class="row"><label for="frq">Free response points<small>out of 40</small></label><input id="frq" type="number" inputmode="decimal" min="0" max="40" step="0.5" placeholder="0-40"></div>
+<div class="err" id="midErr"></div>
+<div class="mini" id="midOut">Midterm: enter both scores</div>
+</section>
+
+<section class="card">
+<h2>2. Section quizzes (25%)</h2>
+<div class="quizzes">
+<div><span>DSQ 1</span><input id="q1" type="number" inputmode="numeric" min="0" max="5" step="1" value="5"></div>
+<div><span>DSQ 2</span><input id="q2" type="number" inputmode="numeric" min="0" max="5" step="1" value="5"></div>
+<div><span>DSQ 3</span><input id="q3" type="number" inputmode="numeric" min="0" max="5" step="1" value="5"></div>
+<div><span>DSQ 4</span><input id="q4" type="number" inputmode="numeric" min="0" max="5" step="1" value="5"></div>
+<div><span>DSQ 5</span><input id="q5" type="number" inputmode="numeric" min="0" max="5" step="1" value="5"></div>
+</div>
+<div class="err" id="qErr"></div>
+<div class="mini" id="qOut"></div>
+</section>
+
+<section class="card">
+<h2>3. Final exam (40%)</h2>
+<div class="final-head"><span class="note">Your final exam score</span><span class="big" id="fOut">80%</span></div>
+<input id="fin" type="range" min="0" max="100" step="1" value="80" aria-label="Final exam score percent">
+<div class="ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+</section>
+
+<section class="results" aria-live="polite">
+<div class="res raw"><div><div class="t">Raw course grade</div><div class="d">No curve, straight weighted %</div></div><div class="v" id="rRaw">--</div></div>
+<div class="res harsh"><div><div class="t">Harsh professor curve</div><div class="d">Stingiest recent 100B split, strong class</div></div><div class="v" id="rHarsh">--</div></div>
+<div class="res honest"><div><div class="t">Honest curve</div><div class="d">Typical 100B split, typical class</div></div><div class="v" id="rHonest">--</div></div>
+</section>
+
+<p class="mini" style="margin:8px 4px 0">Curve letters are estimates. The biggest unknown is how the whole class does on the final: if the class averages above 55%, even the harsh letter can drop one step. If it averages near 45% (like the midterm), the honest letter is the better guess.</p>
+
+<section class="card" style="margin-top:14px">
+<h2>Final exam score you need</h2>
+<table><thead><tr><th>Target</th><th>Harsh curve</th><th>Honest curve</th></tr></thead><tbody id="need"></tbody></table>
+<p class="mini">Based on your midterm and quiz scores above.</p>
+</section>
+
+<section class="card note">
+<h2>How this works</h2>
+<p><b>Weights</b> (syllabus): midterm 35%, final 40%, 5 section quizzes 25%. Midterm is 80 points: 8 multiple choice at 5 each plus 2 free response at 20 each.</p>
+<p><b>Curve:</b> Frech says there is no fixed scale and he curves toward other 100B sections. So your letter depends on where you rank. This page estimates the class's course grades, then applies a real past letter split from the UCSB Registrar.</p>
+<p><b>Harsh curve:</b> Spring 2024 ECON 100B split (17.8% A range), and it assumes the class averages 55% on the final and 95% on quizzes.</p>
+<p><b>Honest curve:</b> all regular ECON 100B sections 2022 to 2026 combined (3,689 grades, 25.4% A range), class averages 45% on the final (same as the midterm) and 88% on quizzes.</p>
+<p>Known: midterm class median 45%, mean 45.5%. Everything about the final is an estimate, so treat letters as a guide, not a promise.</p>
+<p>Data: <a href="https://github.com/dailynexusdata/grades-data">UCSB Registrar grade counts (Daily Nexus, public records)</a></p>
+<button type="button" id="reset">Clear my scores</button>
+</section>
+</main>
+
+<script>
+/*CALC_START*/
+var LETTERS=['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F'];
+var HONEST={dist:[0.01816,0.12686,0.1087,0.15668,0.1575,0.12605,0.1312,0.08349,0.04473,0.01572,0.01355,0.00488,0.01247],mu:55.925,sd:11.0262};
+var HARSH={dist:[0.02192,0.08219,0.07397,0.13425,0.12877,0.12329,0.12603,0.16712,0.06027,0.02192,0.04658,0.00548,0.00822],mu:61.675,sd:12.3374};
+function ncdf(z){var s=z<0?-1:1;var x=Math.abs(z)/Math.SQRT2;var t=1/(1+0.3275911*x);var y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return 0.5*(1+s*y);}
+function letterFor(raw,c){var above=1-ncdf((raw-c.mu)/c.sd);var cum=0;for(var i=0;i<LETTERS.length;i++){cum+=c.dist[i];if(above<cum)return LETTERS[i];}return 'F';}
+function rawGrade(mcq,frq,quizSum,fin){var mid=(mcq*5+frq)/80;return quizSum+35*mid+0.4*fin;}
+function rank(l){return LETTERS.indexOf(l);}
+function needFinal(mcq,frq,quizSum,target,c){for(var f=0;f<=100;f++){if(rank(letterFor(rawGrade(mcq,frq,quizSum,f),c))<=rank(target))return f;}return null;}
+/*CALC_END*/
+var $=function(id){return document.getElementById(id);};
+$('nojs').style.display='none';
+function num(el,max){var v=el.value.trim();if(v==='')return null;var n=Number(v);if(!isFinite(n)||n<0||n>max)return NaN;return n;}
+function update(){
+  var mcq=num($('mcq'),8),frq=num($('frq'),40),ok=true;
+  $('midErr').textContent='';$('qErr').textContent='';
+  if(Number.isNaN(mcq)||(mcq!==null&&mcq%1!==0)){$('midErr').textContent='Multiple choice must be a whole number from 0 to 8';ok=false;}
+  else if(Number.isNaN(frq)){$('midErr').textContent='Free response must be from 0 to 40';ok=false;}
+  var qs=0;for(var i=1;i<=5;i++){var q=num($('q'+i),5);if(q===null||Number.isNaN(q)){$('qErr').textContent='Each quiz must be from 0 to 5';ok=false;break;}qs+=q;}
+  var fin=Number($('fin').value);$('fOut').textContent=fin+'%';
+  if(ok)$('qOut').textContent='Quizzes: '+qs+' / 25 = '+(qs/25*100).toFixed(0)+'%';
+  if(!ok||mcq===null||frq===null){
+    if(ok)$('midOut').textContent='Midterm: enter both scores';
+    $('rRaw').textContent='--';$('rHarsh').textContent='--';$('rHonest').textContent='--';$('need').innerHTML='';return;}
+  var mid=(mcq*5+frq);$('midOut').textContent='Midterm: '+mid+' / 80 = '+(mid/80*100).toFixed(1)+'% (class mean 45.5%)';
+  var raw=rawGrade(mcq,frq,qs,fin);
+  $('rRaw').textContent=raw.toFixed(1)+'%';
+  $('rHarsh').textContent=letterFor(raw,HARSH);
+  $('rHonest').textContent=letterFor(raw,HONEST);
+  var rows='';['A','A-','B+','B','B-'].forEach(function(t){
+    var h=needFinal(mcq,frq,qs,t,HARSH),o=needFinal(mcq,frq,qs,t,HONEST);
+    rows+='<tr><td>'+t+' or better</td><td>'+(h===null?'not reachable':h+'%')+'</td><td>'+(o===null?'not reachable':o+'%')+'</td></tr>';});
+  $('need').innerHTML=rows;
+}
+['mcq','frq','q1','q2','q3','q4','q5','fin'].forEach(function(id){$(id).addEventListener('input',update);});
+$('reset').addEventListener('click',function(){$('mcq').value='';$('frq').value='';for(var i=1;i<=5;i++)$('q'+i).value='5';$('fin').value='80';update();});
+update();
+</script>
+</body>
+</html>
